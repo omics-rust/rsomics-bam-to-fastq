@@ -30,6 +30,15 @@ pub fn bam_to_fastq(
 
         out.write_all(b"@").map_err(RsomicsError::Io)?;
         out.write_all(name).map_err(RsomicsError::Io)?;
+        // mate suffix for paired reads, matching `samtools fastq` (/1 first
+        // segment, /2 last segment); unpaired reads get no suffix.
+        if flags.is_segmented() {
+            if flags.is_first_segment() {
+                out.write_all(b"/1").map_err(RsomicsError::Io)?;
+            } else if flags.is_last_segment() {
+                out.write_all(b"/2").map_err(RsomicsError::Io)?;
+            }
+        }
         out.write_all(b"\n").map_err(RsomicsError::Io)?;
 
         let mut bases: Vec<u8> = seq.iter().collect();
