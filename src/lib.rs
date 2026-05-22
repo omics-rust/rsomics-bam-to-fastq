@@ -1,14 +1,10 @@
-use std::fs::File;
 use std::io::{BufWriter, Write};
 use std::path::Path;
 
-use noodles::bam;
 use rsomics_common::{Result, RsomicsError};
 
 pub fn bam_to_fastq(input: &Path, output: &mut dyn Write, include_secondary: bool) -> Result<u64> {
-    let file = File::open(input)
-        .map_err(|e| RsomicsError::InvalidInput(format!("{}: {e}", input.display())))?;
-    let mut reader = bam::io::Reader::new(file);
+    let mut reader = rsomics_bamio::open_parallel(input)?;
     let _header = reader.read_header().map_err(RsomicsError::Io)?;
 
     let mut out = BufWriter::with_capacity(256 * 1024, output);
