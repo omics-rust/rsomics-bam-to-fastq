@@ -43,7 +43,9 @@ impl Cli {
             Box::new(std::fs::File::create(&self.output).map_err(RsomicsError::Io)?)
         };
 
-        let count = bam_to_fastq(&self.input, &mut out, self.include_secondary)?;
+        let workers = std::num::NonZero::new(self.common.thread_count())
+            .unwrap_or(std::num::NonZero::<usize>::MIN);
+        let count = bam_to_fastq(&self.input, &mut out, self.include_secondary, workers)?;
 
         if !self.common.quiet {
             eprintln!("{count} reads extracted");

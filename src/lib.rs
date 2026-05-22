@@ -1,10 +1,16 @@
 use std::io::{BufWriter, Write};
+use std::num::NonZero;
 use std::path::Path;
 
 use rsomics_common::{Result, RsomicsError};
 
-pub fn bam_to_fastq(input: &Path, output: &mut dyn Write, include_secondary: bool) -> Result<u64> {
-    let mut reader = rsomics_bamio::open_parallel(input)?;
+pub fn bam_to_fastq(
+    input: &Path,
+    output: &mut dyn Write,
+    include_secondary: bool,
+    workers: NonZero<usize>,
+) -> Result<u64> {
+    let mut reader = rsomics_bamio::open_with_workers(input, workers)?;
     let _header = reader.read_header().map_err(RsomicsError::Io)?;
 
     let mut out = BufWriter::with_capacity(256 * 1024, output);
