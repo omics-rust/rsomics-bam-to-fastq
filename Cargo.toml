@@ -12,6 +12,11 @@ description = "Extract FASTQ reads from BAM — Rust port of samtools fastq"
 name = "rsomics-bam-to-fastq"
 path = "src/main.rs"
 
+
+[lib]
+name = "rsomics_bam_to_fastq"
+path = "src/lib.rs"
+doctest = false
 [dependencies]
 rsomics-common = { version = "0.6" }
 rsomics-help = { version = "0.3" }
